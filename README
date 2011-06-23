@@ -1,0 +1,210 @@
+==================================================================================
+jQuery.slideBanjo : How To ////////////////////////////////////////////////////|
+==================================================================================
+
+	jQuery.slideBanjo - plugin that shows pretty slides at your site.
+	Version: 1.0
+
+	Copyright 2011, Sergey Kamardin.
+
+	http://www.gobwas.com/sbanjo
+
+
+	Licensed under the MIT license.
+	http://www.opensource.org/licenses/mit-license.php
+
+        Date: Tue June 22 15:00:00 2011 +0300.
+        Location: Moscow, Russia.
+        Contact: gobwas[a]gobwas.com
+
+==================================================================================
+What do I need to use it? //////////////////////////////////////////////////////|
+==================================================================================
+
+	Thanks for using jQuery.slideBanjo!
+
+	To use it on your perfect site you need five things:
+
+		a) jquery library file (1.3.0 and higher);
+		b) jquery ui library file (1.7.3 and higher);
+		c) jQuery.slideBanjo.js file (or jQuery.slideBanjo.min.js optimized file);
+		d) folder named 'css' with jQuery.slideBanjo.styles.css file;
+		e) folder named 'images' with 15 small pics.
+
+	
+	So, to install it on your site, just follow these simple steps:
+
+	=================
+	STEP 1		|
+	=================
+	
+	Save slideBanjo (with points c,d,e of list above)  folder to the one directory in some place at your site.
+	Remember, that all files of slideBanjo should be saved in ONE directory, if not - you must edit .css file.
+
+	For example:
+	
+	I've put 'slideBanjo' folder into js/plugins directory on my site. In the next step I show how it looks inside links.
+
+	=================
+	STEP 2		|
+	=================
+
+	Put these rows in the <head> tag:
+
+	<head>
+		<link rel="stylesheet" type="text/css" href="/js/plugins/slideBanjo/jquery.slideBanjo.styles.css" />
+
+		<script type="text/javascript" language="javascript" src="/js/jquery/jquery-1.6.1.min.js"></script>
+		<script type="text/javascript" language="javascript" src="/js/jquery/jquery-ui-1.8.13.custom.min.js"></script>
+		<script type="text/javascript" language="javascript" src="/js/plugins/slideBanjo/jquery.slideBanjo.min.js"></script>
+	</head>
+
+	
+	=================
+	STEP 3		|
+	=================
+
+	Before you run .slideBanjo() function, you should define an array of slides and options object.
+	
+	Lets start from the slides array:
+
+	Slides array - is an array, that contains many objects. Each object - is all data about some slide. Object have several attributes: name, abstr, content, pics and blocks.
+	Name - is a name of each article from right side of slideBanjo;
+	Abstr - is a short description of article;
+	Content - is a content of article, html tags supported;
+	Pics - is an array with objects, that determines each slide from left side of slideBanjo for article. Each object have two attributes - path (link to the picture) and caption (caption of picture).
+	Blocks - is an array with objects, that determines some minimized additional content for article. Each object have two attrs - title and text (that will be minimized).
+
+	So, we can draw a schema for each object of slides array:
+
+	var slide=	{
+				name	:	'Article name',
+				abstr	:	'Short description',
+				content	:	'Full content of <b>article</b>',
+				pics	:	[
+							{  path:'http://gbws.ru/images/logo.jpg',
+							   caption:'gbws.com logo' },
+							{...}
+						],
+				blocks	:	[
+							{  title:'Additional block',
+							   text:'Minimized content' },
+							{...}
+						]
+			};
+
+	So, all slide objects should be placed in array.
+	
+	So, in this way, we need to get this array:
+	var slides=[
+			{	name		:	"jQuery.slideBanjo",
+				abstr		:	"Demonstration.",
+				content		:	"<p>Is plugin that shows pretty slides at your site. For more info look at www.gobwas.com/sbanjo<\/p>",
+				pics		:	[{path:"pics/mars.png",caption:"Mars"},{path:'pics/earth.png',caption:"Earth"},{path:"pics/jupiter.png",caption:"Jupiter"}],
+				blocks		:	[{title:'Additional block',text:'Some content.'}]
+			},
+			{	name		:	"jQuery.slideBanjo",
+				abstr		:	"Easy to use.",
+				content		:	"<p>Is plugin that shows very pretty slides at your site. For more info look at www.github.com/gobwas<\/p>",
+				pics		:	[{path:"pics/mercury.png",caption:"Mercury"},{path:"pics/saturnus.png",caption:"Saturnus"},{path:"pics/venus.png",caption:"Venus"}],
+				blocks		:	[{title:'Additional block',text:'Some content.'}]
+			}
+		    ];
+	
+	Slides array - is a neccessary object, that we should give to slideBanjo. The second object is options - and it unneccessary.
+	
+	Look at full options object:
+
+	var options: 	{
+				navigationScrollTime		:	'auto',
+				slideScrollTime			:	5000,
+				sliderEasing			: 	'easeInBack',
+				easing				:	'easeOutCirc',
+				moveSpeed			:	700,
+				sliderSpeed			:	500,
+				loopX				:	'loop',
+				blockEffect			:	'blind',
+				blockEffectSpeed		:	300,
+				hideMouseOver			:	true,
+				hideMouseTime			:	3000,
+				innerShadow			: 	true,
+				loadingText			:	"Loading."
+			}
+	
+	Some descriptions of attributes:
+		navigationScrollTime 	-	number	      |	time interval after which there is a automatical change of articles (autochange is turning off, when user clicks on some article or slide);
+								if you set 'auto' - navigationScrollTime will be counted as multiplying the number of pictures of article for a slideScrollTime attribute.
+		slideScrollTime		-	number	      |	time interval after which there is a automatical change of slides (autochange is turning off, when user clicks on right/left buttons);
+		sliderEasing		-	string	      |	easing of scrollbar in articles (if articles is to many)*;
+		easing			-	string	      |	easing of animation in slideBanjo*;
+		moveSpeed		-	number	      |	speed of pictures moving;
+		sliderSpeed		-	number	      |	speed of scrolling;
+		loopX			-	string	      |	type of looping pictures (variants:'backward','loop','prohibit');
+		blockEffect		-	string	      |	effect of showing additional minimized info*;
+		blockEffectSpeed	-	number	      |	speed of showing additional info;
+		hideMouseOver		-	boolean	      | if true - the caption of each picture will be hidden after hideMouseTime below;
+		hideMousetime		-	number	      | time interval after which there is a automatical hide of picture caption;
+		innerShadow		- 	boolean	      | show/hide the inner shadow for each picture;
+		loadingText		-	string	      | text of loading bar (shows when pictures loading);
+		
+	=================
+	STEP 4		|
+	=================
+
+	To finish installation you need to run .slideBanjo(slides,options) function on some div-element at your site.
+	
+
+	<html>
+		<body>
+			<div id="banjo"></div>
+
+	// It is a simple html-code below. Now, in some script you must run .slideBanjo() function on button:
+
+			<script type="text/javascript">
+				$(document).ready(function() {
+					var slides=[
+							{	name		:	"jQuery.slideBanjo",
+								abstr		:	"Demonstration.",
+								content		:	"<p>Is plugin that shows pretty slides at your site. For more info look at www.gobwas.com/sbanjo<\/p>",
+								pics		:	[{path:"pics/mars.png",caption:"Mars"},{path:'pics/earth.png',caption:"Earth"},{path:"pics/jupiter.png",caption:"Jupiter"}],
+								blocks		:	[{title:'Additional block',text:'Some content.'}]
+							},
+							{	name		:	"jQuery.slideBanjo",
+								abstr		:	"Easy to use.",
+								content		:	"<p>Is plugin that shows very pretty slides at your site. For more info look at www.github.com/gobwas<\/p>",
+								pics		:	[{path:"pics/mercury.png",caption:"Mercury"},{path:"pics/saturnus.png",caption:"Saturnus"},{path:"pics/venus.png",caption:"Venus"}],
+								blocks		:	[{title:'Additional block',text:'Some content.'}]
+							}
+		    				];
+					
+					var options: 	{
+						navigationScrollTime		:	'auto',
+						hideMouseOver			:	false,
+						loadingText			:	"Loading slides!"
+					};
+
+
+					$("#banjo").slideBanjo(slides,options);
+				}
+			</script>
+		</body>
+	</html>
+
+	You've got it!
+	Sorry for my english, enjoy slideBanjo and if you'll need help - contact me!
+
+==================================================================================
+Where can i get jquery libraries? ////////////////////////////////////////////////|
+==================================================================================
+
+	Just follow this links:
+
+	http://jqueryui.com/
+	http://jquery.com/
+
+==================================================================================
+jQuery.slideBanjo : Change List////////////////////////////////////////////////|
+==================================================================================
+
+22.06.2011// ... => 1.0 version;
+
