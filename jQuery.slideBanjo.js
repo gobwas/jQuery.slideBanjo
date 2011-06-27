@@ -1,13 +1,13 @@
 /*!
  * jQuery.slideBanjo - plugin that shows pretty slides at your site.
  * http://www.gobwas.com/sbanjo
- * Version: 1.0 beta.
+ * Version: 1.05.
  *
  * Copyright 2011, Sergey Kamardin.
  * Licensed under the MIT license.
  * http://www.opensource.org/licenses/mit-license.php
  *
- * Date: Tue June 22 15:00:00 2011 +0300.
+ * Date: Tue June 27 15:00:00 2011 +0300.
  * Location: Moscow, Russia.
  * Contact: gobwas[a]gobwas.com
  */
@@ -15,7 +15,6 @@
 (function($){
 	$.fn.slideBanjo	=	
 		function(userSlides,userOptions) {
-			 
 			if (this[0].tagName!='DIV') return this;
 			var temp_a,temp_b,temp_c,temp_d;
 			var slideBanjo={
@@ -72,6 +71,11 @@
 					captionToggle		:	true,
 					global_div			:	$(this).removeClass().addClass('sm_global'),
 					naviST				: 	false,
+					timeoutsY			: 	[],
+					timeoutsX			:	[],
+					timeoutsC			:	[],
+					winBlur				: 	false,
+					ready				:	false,
 					 
 					userOptions: {
 						navigationScrollTime	:	'auto',
@@ -86,12 +90,23 @@
 						hideMouseOver			:	true,
 						hideMouseTime			:	3000,
 						innerShadow				: 	true,
-						loadingText				:	"Загрузка слайдов."
+						loadingText				:	"Загрузка слайдов.",
+						loadPause				:	false
 					 }
 				};
 			 
 			$.extend(slideBanjo.userOptions,userOptions);
-			
+			$(window).bind('blur',function(){
+				slideBanjo.winBlur=true; 
+				for (var x in slideBanjo.timeoutsX) {clearTimeout(slideBanjo.timeoutsX.shift());}
+				for (var x in slideBanjo.timeoutsY) {clearTimeout(slideBanjo.timeoutsY.shift());}
+				for (var x in slideBanjo.timeoutsC) {clearTimeout(slideBanjo.timeoutsC.shift());}
+				$(window).bind('focus',function(){
+					$(window).unbind('focus');
+					slideBanjo.winBlur=false;
+					if (slideBanjo.navigation.changeStatus=='auto') {slideBanjo.navigation.autoChange(true);}
+					if (slideBanjo.slide.changeStatus=='auto') 		{slideBanjo.slide.autoChange(slideBanjo.slide.globalCounter,true);}
+				})});
 			//
 			//	slideBanjo.draw : this function is a first function of que, it draws a neccessary elements.
 			//
@@ -234,7 +249,7 @@
 				this.total_loaded++;
 				var text=this.userOptions.loadingText+' '+String(this.total_loaded)+'/'+String(this.total_loading);
 				this.loading_div.html(text);
-				if (this.total_loaded==this.total_loading) {this.loading_div.fadeOut(100,function(a){return function(){a.remove();}}(this.loading_div));}
+				if (this.total_loaded==this.total_loading) {this.loading_div.fadeOut(100,function(a){return function(){a.remove();}}(this.loading_div)); this.ready=true;}
 			}
 			
 			slideBanjo.test=function(a){alert(a);};
@@ -242,15 +257,36 @@
 			//
 			//	slideBanjo.navigation.autoChange : this function starts a autochange cycle for right navigation bar (navigator).
 			//
-			slideBanjo.navigation.autoChange		=	function(){
-				if (this.changeStatus!='auto') return;
-				if ((slideBanjo.current+1)>=slideBanjo.total || slideBanjo.current==null) {this.changeEffect(0);}
+			slideBanjo.navigation.autoChange		=	function(global){
+				if (this.changeStatus!='auto' || slideBanjo.winBlur===true) return;
+				if ((slideBanjo.current+1)>=slideBanjo.total || slideBanjo.current==null) {
+					if (!global) this.changeEffect(0);
+				}
 				else {
-					this.changeEffect(slideBanjo.current+1);
+					if (!global) {
+						if (slideBanjo.userOptions.loadPause===true){
+							if (slideBanjo.ready===true) {
+								this.changeEffect(slideBanjo.current+1);
+							}
+							else {
+								for (var x in slideBanjo.timeoutsY) {clearTimeout(slideBanjo.timeoutsY.shift());}
+								var k = setTimeout(function(){slideBanjo.navigation.autoChange();},1000);
+								slideBanjo.timeoutsY.push(k);
+								return;
+							}
+						}
+						else {
+							this.changeEffect(slideBanjo.current+1);
+						}
+					}
 				}
 				
 				if (slideBanjo.userOptions.navigationScrollTime=="auto" || slideBanjo.naviST==true) {slideBanjo.naviST=true;slideBanjo.userOptions.navigationScrollTime=Number(slideBanjo.total_pic*slideBanjo.userOptions.slideScrollTime);}
-				if (this.changeStatus=='auto') {setTimeout(function(){slideBanjo.navigation.autoChange();},slideBanjo.userOptions.navigationScrollTime);}
+				if (this.changeStatus=='auto') {
+					for (var x in slideBanjo.timeoutsY) {clearTimeout(slideBanjo.timeoutsY.shift());}
+					var k = setTimeout(function(){slideBanjo.navigation.autoChange();},slideBanjo.userOptions.navigationScrollTime);
+					slideBanjo.timeoutsY.push(k);
+				}
 			};
 			
 			//
@@ -325,12 +361,20 @@
 			//
 			//	slideBanjo.slide.autoChange : this function starts a autochange cycle for pictures (slides) in slideholder.
 			//
-			slideBanjo.slide.autoChange		=	function(gc){
-				if (slideBanjo.slide.changeStatus!='auto' || gc!=slideBanjo.slide.globalCounter) return;
+			slideBanjo.slide.autoChange		=	function(gc,global){
+				if (slideBanjo.slide.changeStatus!='auto' || gc!=slideBanjo.slide.globalCounter || slideBanjo.winBlur===true) return;
+				
+				if (!global) slideBanjo.slide.changeEffect('right');
 
-					this.changeEffect('right');
-
-				if (this.changeStatus=='auto') {setTimeout((function(g){return function(){slideBanjo.slide.autoChange(g);}})(gc),slideBanjo.userOptions.slideScrollTime);}
+				if (this.changeStatus=='auto') {
+						for (var x in slideBanjo.timeoutsX) {
+							clearTimeout(slideBanjo.timeoutsX.shift());
+						}
+					
+						var k=setTimeout((function(g){return function(){slideBanjo.slide.autoChange(g);}})(gc),slideBanjo.userOptions.slideScrollTime);
+						slideBanjo.timeoutsX.push(k);
+						
+					}
 				
 				if (slideBanjo.userOptions.hideMouseOver) slideBanjo.hideMouseFunc();
 			};
@@ -339,8 +383,9 @@
 			//	slideBanjo.slide.userChange : this function is callback after user's click on some item of slideholder.
 			//
 			slideBanjo.slide.userChange		=	function(side,e){
-				
-				clearTimeout($.data(slideBanjo.slide_caption_div,'timeoutID'));
+				for (var x in slideBanjo.timeoutsC) {
+					clearTimeout(slideBanjo.timeoutsC.shift());
+				}
 				
 				$(e.target).attr('disabled','disabled');
 				slideBanjo.slide.changeStatus='user';
@@ -367,12 +412,8 @@
 					slideBanjo.slide.captionButtonsToggle(false)
 				}
 				else {
-					slideBanjo.slide.captionButtonsToggle(true)
-					setTimeout((function(g){
-						return function() {
-							slideBanjo.slide.autoChange(g);
-						}
-					})(slideBanjo.slide.globalCounter),slideBanjo.userOptions.slideScrollTime);
+					slideBanjo.slide.captionButtonsToggle(true);
+					slideBanjo.slide.autoChange(slideBanjo.slide.globalCounter,true);
 				}
 			};
 			
@@ -521,7 +562,7 @@
 			slideBanjo.hideMouseFunc			=	function() {
 				slideBanjo.slide_caption_div.stop().animate({opacity:1}, function(event){
 					var k=setTimeout(function(){slideBanjo.slide_caption_div.stop().animate({opacity:0})	},slideBanjo.userOptions.hideMouseTime)
-					$.data(slideBanjo.slide_caption_div,'timeoutID',k);
+					slideBanjo.timeoutsC.push(k);
 				});	
 			}
 			

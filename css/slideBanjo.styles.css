@@ -1,5 +1,17 @@
 @charset "utf-8";
-/* CSS Document */
+/*!
+ * jQuery.slideBanjo - plugin that shows pretty slides at your site.
+ * http://www.gobwas.com/sbanjo
+ * Version: 1.05.
+ *
+ * Copyright 2011, Sergey Kamardin.
+ * Licensed under the MIT license.
+ * http://www.opensource.org/licenses/mit-license.php
+ *
+ * Date: Tue June 27 15:00:00 2011 +0300.
+ * Location: Moscow, Russia.
+ * Contact: gobwas[a]gobwas.com
+ */
 
 .sm_global			{width:889px; margin:0px auto 30px auto; font:14px/75% Arial, Helvetica, sans-serif; color:#404041; position:relative;}
 .sm_banjo			{height:287px;margin:0px auto 30px auto;border:1px solid #e8e8e8; overflow:hidden;}

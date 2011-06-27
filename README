@@ -3,7 +3,7 @@ jQuery.slideBanjo : How To ////////////////////////////////////////////////////|
 ==================================================================================
 
 	jQuery.slideBanjo - plugin that shows pretty slides at your site.
-	Version: 1.0
+	Version: 1.05
 
 	Copyright 2011, Sergey Kamardin.
 
@@ -13,7 +13,7 @@ jQuery.slideBanjo : How To ////////////////////////////////////////////////////|
 	Licensed under the MIT license.
 	http://www.opensource.org/licenses/mit-license.php
 
-        Date: Tue June 22 15:00:00 2011 +0300.
+        Date: Tue June 27 15:00:00 2011 +0300.
         Location: Moscow, Russia.
         Contact: gobwas[a]gobwas.com
 
@@ -128,7 +128,8 @@ What do I need to use it? //////////////////////////////////////////////////////
 				hideMouseOver			:	true,
 				hideMouseTime			:	3000,
 				innerShadow			: 	true,
-				loadingText			:	"Loading."
+				loadingText			:	"Loading.",
+				loadPause			:	false
 			}
 	
 	Some descriptions of attributes:
@@ -146,6 +147,7 @@ What do I need to use it? //////////////////////////////////////////////////////
 		hideMousetime		-	number	      | time interval after which there is a automatical hide of picture caption;
 		innerShadow		- 	boolean	      | show/hide the inner shadow for each picture;
 		loadingText		-	string	      | text of loading bar (shows when pictures loading);
+		loadPasue		-	boolean       | if true - autochange of slides will run when all pics will be loaded (v. 1.05 upd.);
 		
 	=================
 	STEP 4		|
@@ -207,4 +209,10 @@ jQuery.slideBanjo : Change List////////////////////////////////////////////////|
 ==================================================================================
 
 22.06.2011// ... => 1.0 version;
+27.06.2011// 1.0 => 1.05 version:
+					- Added sensivity for window blur/focus events - if u leave (disactivate, hide) window or
+					  tab with slideBanjo - autochange of slides will stop. Autochange will run on activating
+          				  tab or window with slideBanjo;
+					- Added functionality of loadPause (the same name in userOptions) - if u set it true - 
+					  autochange of slides will run when all pics will be loaded (default - false).	
 
